@@ -151,6 +151,67 @@ function isCurrentDay(date) {
 }
 
 /**
+ * 触摸滑动相关变量
+ */
+let touchStartX = 0;
+let touchEndX = 0;
+const minSwipeDistance = 50;
+
+/**
+ * 当前选中的日期
+ */
+let selectedDate = null;
+
+/**
+ * 初始化触摸事件
+ */
+function initTouchEvents() {
+    const calendar = document.querySelector('.calendar-wrapper');
+    
+    calendar.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+    });
+    
+    calendar.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].clientX;
+        handleSwipe();
+    });
+}
+
+/**
+ * 处理滑动事件
+ */
+function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX;
+    
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+        if (swipeDistance > 0) {
+            // 向右滑动，显示上个月
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+        } else {
+            // 向左滑动，显示下个月
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        }
+        updateCalendar();
+    }
+}
+
+/**
+ * 处理日期点击
+ */
+function handleDateClick(date, element) {
+    // 移除之前选中的样式
+    const previousSelected = document.querySelector('.calendar-day.selected');
+    if (previousSelected) {
+        previousSelected.classList.remove('selected');
+    }
+    
+    // 添加新的选中样式
+    element.classList.add('selected');
+    selectedDate = date;
+}
+
+/**
  * 更新日历显示
  */
 function updateCalendar() {
@@ -167,8 +228,13 @@ function updateCalendar() {
         const holiday = getHoliday(day.date);
         const isToday = isCurrentDay(day.date);
         
-        // 添加当前日期的类名
-        dayElement.className = `calendar-day${day.isCurrentMonth ? '' : ' other-month'}${day.isDutyDay ? ' duty-day' : ''}${holiday ? ' holiday' : ''}${isToday ? ' current-day' : ''}`;
+        // 添加选中状态的判断
+        const isSelected = selectedDate && 
+            day.date.getDate() === selectedDate.getDate() &&
+            day.date.getMonth() === selectedDate.getMonth() &&
+            day.date.getFullYear() === selectedDate.getFullYear();
+        
+        dayElement.className = `calendar-day${day.isCurrentMonth ? '' : ' other-month'}${day.isDutyDay ? ' duty-day' : ''}${holiday ? ' holiday' : ''}${isToday ? ' current-day' : ''}${isSelected ? ' selected' : ''}`;
         
         const dateNumber = document.createElement('div');
         dateNumber.className = 'date-number';
@@ -184,11 +250,17 @@ function updateCalendar() {
             lunarDate.textContent = holiday.name || '假';
         }
         
+        // 添加点击事件
+        dayElement.addEventListener('click', () => handleDateClick(day.date, dayElement));
+        
         calendarDays.appendChild(dayElement);
     });
 }
 
-// 修改事件监听器
+// 初始化触摸事件
+initTouchEvents();
+
+// 保留按钮点击事件
 document.getElementById('prevMonth').addEventListener('click', () => {
     currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
     updateCalendar();

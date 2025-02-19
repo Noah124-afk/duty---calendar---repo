@@ -13,6 +13,9 @@ body {
     background-color: white;
     padding: 0 8px;
     box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y pinch-zoom;
 }
 
 .controls {
@@ -288,4 +291,58 @@ button:hover {
         height: 12px;
         font-size: 8px;
     }
+}
+
+/* 按钮样式 */
+.icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background-color: #f5f5f5;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-button:hover {
+    background-color: #e8e8e8;
+}
+
+.icon-button:active {
+    background-color: #d9d9d9;
+    transform: scale(0.95);
+}
+
+/* 箭头样式 */
+.arrow {
+    width: 8px;
+    height: 8px;
+    border: solid #666;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+}
+
+.arrow.left {
+    transform: rotate(135deg);
+    margin-left: 3px;
+}
+
+.arrow.right {
+    transform: rotate(-45deg);
+    margin-right: 3px;
+}
+
+/* 选中日期的样式 */
+.calendar-day.selected {
+    background-color: #e6f4ff;
+    border: 2px solid #1890ff;
+}
+
+.calendar-day.selected .date-number {
+    color: #1890ff;
+    font-weight: 500;
 } 
